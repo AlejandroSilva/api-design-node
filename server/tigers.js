@@ -29,38 +29,36 @@ tigerRouter.param('id', function(req, res, next, id) {
     }
 });
 
-tigerRouter.get('/', function(req, res){
-    res.json(tigers);
-});
+tigerRouter.route('/')
+    .get(function(req, res){
+        res.json(tigers);
+    })
+    .post(updateId, function(req, res) {
+        var tiger = req.body;
 
-tigerRouter.get('/:id', function(req, res){
-    var tiger = req.tiger;
-    res.json(tiger || {});
-});
+        tigers.push(tiger);
 
-tigerRouter.post('/', updateId, function(req, res) {
-    var tiger = req.body;
+        res.json(tiger);
+    });
 
-    tigers.push(tiger);
+tigerRouter.route('/:id')
+    .get(function(req, res){
+        var tiger = req.tiger;
+        res.json(tiger || {});
+    })
+    .put(function(req, res) {
+        var update = req.body;
+        if (update.id) {
+            delete update.id
+        }
 
-    res.json(tiger);
-});
-
-
-tigerRouter.put('/:id', function(req, res) {
-    var update = req.body;
-    if (update.id) {
-        delete update.id
-    }
-
-    var tiger = _.findIndex(tigers, {id: req.params.id});
-    if (!tigers[tiger]) {
-        res.send();
-    } else {
-        var updatedLion = _.assign(tigers[tiger], update);
-        res.json(updatedLion);
-    }
-});
+        var tiger = _.findIndex(tigers, {id: req.params.id});
+        if (!tigers[tiger]) {
+            res.send();
+        } else {
+            var updatedLion = _.assign(tigers[tiger], update);
+            res.json(updatedLion);
+        }
+    });
 
 module.exports = tigerRouter;
-
