@@ -11,12 +11,9 @@ app.get('/data', function (req, res) {
 });
 
 app.get('/', function (req, res) {
-    var file = fs.readFile('index.html', function (err, data) {
+    res.sendFile(__dirname+'/index.html', function (err) {
         if(err){
-            res.status(500).send("error reading file");
-        }else{
-            res.setHeader('content-type', 'text/html');
-            res.send(data);
+            res.status(400).send('error reading the file');
         }
     });
 });
