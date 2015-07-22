@@ -20,9 +20,12 @@ var id = 0;
 
 var updateId = function(req, res, next) {
   // fill this out. this is the route middleware for the ids
+    req.body.id = id+'';
+    id++;
+    next();
 };
 
-app.use(morgan('dev'))
+app.use(morgan('dev'));
 app.use(express.static('client'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -31,6 +34,14 @@ app.use(bodyParser.json());
 app.param('id', function(req, res, next, id) {
   // fill this out to find the lion based off the id
   // and attach it to req.lion. Rember to call next()
+    var lion = _.find(lions, {id: id});
+    if(lion){
+        req.lion = lion;
+        next();
+    }else{
+        //res.status(404).send("lion not found");
+        next(new Error('lion not found'))
+    }
 });
 
 app.get('/lions', function(req, res){
@@ -39,7 +50,7 @@ app.get('/lions', function(req, res){
 
 app.get('/lions/:id', function(req, res){
   // use req.lion
-  res.json(lion || {});
+  res.json(req.lion);
 });
 
 app.post('/lions', updateId, function(req, res) {
@@ -51,19 +62,26 @@ app.post('/lions', updateId, function(req, res) {
 });
 
 
-app.put('/lions/:id', function(req, res) {
+app.put('/lions/:id', function(req, res, next) {
   var update = req.body;
+  // avoid to overwrite the id
   if (update.id) {
     delete update.id
   }
 
-  var lion = _.findIndex(lions, {id: req.params.id});
+  var lion = _.findIndex(lions, {id: req.lion.id});
   if (!lions[lion]) {
-    res.send();
+    next(new Error('invalid id for the lion'))
   } else {
     var updatedLion = _.assign(lions[lion], update);
     res.json(updatedLion);
   }
+});
+
+app.use(function (err, req, res, next) {
+    if(err){
+        res.status(500).send(err.toString());
+    }
 });
 
 app.listen(3000);
