@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+mongoose.connect('mongodb://localhost/todos');
 
 // connect to a database so the below will work.
 // what's happening is that we're createing a new schema
@@ -21,4 +22,12 @@ Todo.create({
   completed: false
 }).then(function(err, todo) {
   console.log(err, todo);
+});
+
+var todo = Todo.find({}, function (err, doc) {
+  if(err){
+    return;
+  }else{
+    console.log(todo);
+  }
 });
