@@ -11,12 +11,28 @@ exports.params = function(req, res, next, id) {
         next();
       }
     }, function(err) {
-      next(err);
+      next(new Error("invalid Id"));
     });
 };
 
-exports.get = function(req, res, next) {
-  // need to populate here
+exports.getAll = function(req, res, next) {
+  Post.find({})
+      .then(function (posts) {
+        res.send(posts);
+      }, function (err) {
+         next(err);
+      });
+};
+
+exports.post = function(req, res, next) {
+  var newpost = req.body;
+
+  Post.create(newpost)
+      .then(function(post) {
+        res.json(post);
+      }, function(err) {
+        next(err);
+      });
 };
 
 exports.getOne = function(req, res, next) {
@@ -38,17 +54,6 @@ exports.put = function(req, res, next) {
       res.json(saved);
     }
   })
-};
-
-exports.post = function(req, res, next) {
-  var newpost = req.body;
-
-  Post.create(newpost)
-    .then(function(post) {
-      res.json(post);
-    }, function(err) {
-      next(err);
-    });
 };
 
 exports.delete = function(req, res, next) {
