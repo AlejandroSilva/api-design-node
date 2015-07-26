@@ -35,11 +35,15 @@ tigerRouter.route('/')
     })
     .post(updateId, function(req, res) {
         var tiger = req.body;
+        tiger.cubs = [];
 
         tigers.push(tiger);
 
         res.json(tiger);
     });
+
+// nesterd Route, path /tigers/1/cubs
+tigerRouter.use('/:id/cubs', require('./cubs'));
 
 tigerRouter.route('/:id')
     .get(function(req, res){
