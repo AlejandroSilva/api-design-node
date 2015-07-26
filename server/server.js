@@ -34,16 +34,28 @@ app.get('/lions/:id', function (req, res) {
 
 app.post('/lions', function(req, res){
     var newLion = req.body;
+    if(!newLion.name || !newLion.pride || !newLion.age || !newLion.gender){
+        return res.status(400).json({
+            lion: newLion,
+            status: "invalid lion"
+        });
+    }
+    newLion.id = Math.round(Math.random()*1000);
+
     lions.push(newLion);
     res.status(201).send( newLion );
 });
 
 app.put('/lions/:id', function (req, res) {
     var id = req.params.id;
-    var lion = lions[id];
+    var lion = lions.filter(function (lion) {
+        return lion.id==id;
+    });
+
     if(!lion){
         return res.status(404).send("lion not found");
     }
+
     // replace
     lion = lions[id] = req.body;
     res.send(lion);
