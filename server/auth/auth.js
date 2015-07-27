@@ -46,23 +46,43 @@ exports.verifyUser = function() {
     var password = req.body.password;
 
     // if no username or password then stop.
+    if(!username || !password){
+        next(new Error('no username or password'));
+        return;
+    }
 
     // look user up in the DB so we can check
     // if the passwords match for the username
-
-    // use the authenticate() method on a user doc. Passin
-    // in the posted password, it will hash the
-    // password the same way as the current passwords got hashed
-
-
+    User.findOne({username: username})
+        .then(function (user) {
+            if(!user){
+                next(new Error('user not found'));
+            }else{
+                // use the authenticate() method on a user doc. Passin
+                // in the posted password, it will hash the
+                // password the same way as the current passwords got hashed
+                if(user.authenticate(password)){
+                    req.user = user;
+                    next();
+                }else{
+                    res.status(401).send('wrong username or password');
+                }
+            }
+        }, function (err) {
+            next(new Error(err));
+        });
   };
 };
 
 // util method to sign tokens on signup
 exports.signToken = function(id) {
   return jwt.sign(
-    {_id: id},
+    {
+        _id: id
+    },
     config.secrets.jwt,
-    {expiresInMinutes: config.expireTime}
+    {
+        expiresInMinutes: config.expireTime
+    }
   );
 };

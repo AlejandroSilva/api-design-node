@@ -12,7 +12,7 @@ exports.params = function(req, res, next, id) {
         next();
       }
     }, function(err) {
-      next(err);
+      next(new Error('invalid ID'));
     });
 };
 
@@ -48,12 +48,26 @@ exports.put = function(req, res, next) {
 
 exports.post = function(req, res, next) {
   var newUser = new User(req.body);
-  newUser.save(function(err, user) {
-    if(err) {next(err);}
+  // check if the user already exist
+  User.findOne({username: newUser.username})
+      .then(function (user) {
+          if(user){
+              return next(new Error('user already exist'));
+          }else{
+              // create it
+              newUser.save(function(err, user) {
+                  if(err){
+                      return next(err);
+                  }
+                  return;
 
-    var token = signToken(user._id);
-    res.json({token: token});
-  });
+                  var token = signToken(user._id);
+                  res.json({token: token});
+              });
+          }
+      }, function (err) {
+          next( err );
+      })
 };
 
 exports.delete = function(req, res, next) {
