@@ -8,11 +8,11 @@ router.param('id', controller.params);
 
 router.route('/')
   .get(controller.get)
-  .post(controller.post)
+  .post( auth.decodeToken(), auth.getFreshUser(), controller.post);
 
 router.route('/:id')
   .get(controller.getOne)
-  .put(controller.put)
-  .delete(controller.delete)
+  .put( auth.decodeToken(), auth.getFreshUser(), controller.put)
+  .delete( auth.decodeToken(), auth.getFreshUser(), controller.delete);
 
 module.exports = router;

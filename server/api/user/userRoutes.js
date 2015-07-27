@@ -6,6 +6,7 @@ var auth = require('../../auth/auth');
 // lock down the right routes :)
 router.param('id', controller.params);
 
+router.get('/me', auth.decodeToken(), auth.getFreshUser(), controller.me);
 router.route('/')
   .get(controller.get)
   .post(controller.post)
