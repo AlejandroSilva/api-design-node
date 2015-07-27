@@ -1,12 +1,13 @@
 var router = require('express').Router();
 var logger = require('../../util/logger');
+var userController = require('./userController');
 
-// setup boilerplate route jsut to satisfy a request
-// for building
+
 router.route('/')
-  .get(function(req, res){
-    logger.log('Hey from user!!');
-    res.send({ok: true});
-  });
+  .get(userController.get);
+
+router.param('id', userController.params);
+router.route('/:id')
+  .get(userController.getOne);
 
 module.exports = router;

@@ -11,7 +11,7 @@ exports.params = function(req, res, next, id) {
         next();
       }
     }, function(err) {
-      next(err);
+      next(new Error('invalid id'));
     });
 };
 
@@ -25,7 +25,7 @@ exports.get = function(req, res, next) {
 };
 
 exports.getOne = function(req, res, next) {
-  // fix me
+    res.send(req.user);
 };
 
 exports.put = function(req, res, next) {

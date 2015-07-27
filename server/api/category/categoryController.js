@@ -1,12 +1,25 @@
 var Category = require('./categoryModel');
 var _ = require('lodash');
+var logger = require('../../util/logger');
 
 exports.params = function(req, res, next, id) {
-  // use the id and attach the category to req
+  // ToDo: use the id and attach the category to req
+  Category.find({_id: id})
+      .then(function (category) {
+          req.category = category;
+          next();
+      }, function (err) {
+          next(new Error('category not found'));
+      });
 };
 
-exports.get = function(req, res, next) {
-
+exports.getAll = function(req, res, next) {
+    Category.find({})
+        .then(function (categories) {
+            res.send(categories)
+        }, function (err) {
+            next(err)
+        });
 };
 
 exports.getOne = function(req, res, next) {

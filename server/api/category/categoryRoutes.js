@@ -1,12 +1,17 @@
 var router = require('express').Router();
 var logger = require('../../util/logger');
+var categoryController = require('./categoryController');
 
-// setup boilerplate route jsut to satisfy a request
-// for building
+
 router.route('/')
-  .get(function(req, res){
-    logger.log('Hey from user!!');
-    res.send({ok: true});
-  });
+    .get(categoryController.getAll)
+    .post(categoryController.post);
+
+router.param('categoryID', categoryController.params);
+router.route('/:categoryID')
+    .get(categoryController.getOne)
+    .post(categoryController.post)
+    .put(categoryController.put)
+    .delete(categoryController.delete);
 
 module.exports = router;
